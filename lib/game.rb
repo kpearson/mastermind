@@ -1,19 +1,20 @@
 class Game
-  attr_reader :instream, :outstream, :message
+  attr_reader :instream, :outstream, :message, :guess
   def initialize(instream, outstream)
     @instream         = instream
     @outstream        = outstream
     @winning_sequence = "rgby".chars.shuffle
     @time_start       = Time.new
-    @guess_counter    = 0
+    @guesses          = 0
     @message          = Messages.new
-    @guess            = nil
+    @guess            = ''
   end
 
   def play
-    outstream.puts message.new_game_prompt
-    guess
     until win? || exit?
+      outstream.puts message.new_game_message
+      outstream.print message.command_prompt
+      guessing
       prosses_guess
     end
   end
@@ -33,12 +34,13 @@ class Game
     when instructions?
       outstream.puts message.instructions
     when close?
-      outstream.puts message.close
+      outstream.puts message.close(correct_colors, correct_positions)
+      add_turn
     end
   end
 
-  def guess
-    @guess ||= instream.gets.gsub(/\s+/, "").downcase
+  def guessing
+    @guess = instream.gets.gsub(/\s+/, "").downcase
   end
 
   def guess_counter
@@ -66,19 +68,23 @@ class Game
   end
 
   def instructions?
-    guess = "i"
+    guess == "i"
   end
 
-  def close
+  def close?
     guess != win? && guess != to_short? && guess != to_long?
   end
 
-  def self.correct_positions
-    guess.chars.zip(@winning_sequence.chars).count { |l| l[0] == l[1] }
+  def correct_positions
+    guess.chars.zip(@winning_sequence).count { |l| l[0] == l[1] }
   end
 
-  def self.correct_colors
-    guess.count(@winning_sequence)
+  def correct_colors
+    guess.count(@winning_sequence.join)
+  end
+
+  def add_turn
+    @guesses += 1
   end
 
 

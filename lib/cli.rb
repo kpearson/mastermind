@@ -2,35 +2,35 @@ require 'messages'
 require 'game'
 class Cli
 
-  attr_reader :instream, :outstream, :messages
+  attr_reader :instream, :outstream, :message
 
   def initialize(instream, outstream)
     @command    = ""
-    @messages   = Messages.new
+    @message   = Messages.new
     @instream   = instream
     @outstream  = outstream
   end
 
   def call
-    outstream.puts messages.welcome_message
+    outstream.puts message.welcome_message
     until finished?
-      outstream.print messages.command_prompt
+      outstream.print message.command_prompt
       @command = instream.gets.strip
-      input_prosess
+      command_prosess
     end
   end
 
-  def input_prosess
+  def command_prosess
     case
     when play?
       game = Game.new(instream, outstream)
       game.play
     when instructions?
-      outstream.puts messages.instructions
+      outstream.puts message.instructions
+      @command = ''
+      command_prosess
     when finished?
-      outstream.puts messages.end_game
-    else
-      outstream.puts messages.invalid
+      outstream.puts message.good_bye
     end
   end
 

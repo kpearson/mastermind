@@ -8,7 +8,7 @@ class Messages
     "> "
   end
 
-  def new_game_prompt
+  def new_game_message
     "I have generated a beginner sequence with four elements made up of:\n(r)ed,\
     (g)reen, (b)lue, and (y)ellow.\nUse (q)uit at any time to end the game.\
     \nWhat's your guess?"
@@ -31,10 +31,15 @@ class Messages
   end
 
   def instructions
-    "To play choose any combination of (r)ed, (g)reen, (b)lue or (y)ellow."
+    "To play choose any combination of (r)ed, (g)reen, (b)lue or (y)ellow.\n \
+    What would you like to do?"
   end
 
-  def close
-    "Close! You have #{Game.correct_colors} in #{Game.correct_positions} correct positions."
+  def close(correct_colors, correct_positions)
+    "Close! You have #{correct_colors} in #{correct_positions} correct positions."
+  end
+
+  def good_bye
+    "Thanks for playing."
   end
 end
