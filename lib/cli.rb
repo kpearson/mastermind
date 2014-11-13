@@ -16,9 +16,9 @@ class Cli
 
   def call
     outstream.puts message.welcome_message
+    outstream.print message.command_prompt
+    @command = input
     while true
-      outstream.print message.command_prompt
-      @command = input
       command_prosesser
     end
   rescue Quit
@@ -40,22 +40,18 @@ class Cli
       end
     when instructions?
       outstream.puts message.pre_instructions
-      @command = ''
+      @command = input
     else
       outstream.puts message.not_valid_input
     end
   end
 
   def play?
-    @command == 'p' || "play"
+    @command == 'p' || @command == 'play'
   end
 
   def instructions?
-    @command == 'i' || "instructions"
-  end
-
-  def valid_difficulty?
-    /[^emh]/ === @command
+    @command == 'i' || @command == "instructions"
   end
 
   def quit?

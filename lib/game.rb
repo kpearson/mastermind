@@ -18,11 +18,11 @@ class Game
     until win? || exit?
       outstream.print message.command_prompt
       guessing
-      prosses_guess
+      process_guess
     end
   end
 
-  def prosses_guess
+  def process_guess
     case
     when exit?
       raise Cli::Quit
