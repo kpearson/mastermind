@@ -3,49 +3,74 @@ require 'game'
 class Cli
   DIFFICULTY_MAP = {"e" => 4, "m" => 5, "h" => 6}
 
-  attr_reader :instream, :outstream, :message
+  class Quit < StandardError; end
 
+  attr_reader :instream, :outstream, :message
   def initialize(instream, outstream)
     @command    = ""
-    @message   = Messages.new
+    @message    = Messages.new(nil)
     @instream   = instream
     @outstream  = outstream
+    @quit       = false
   end
 
   def call
     outstream.puts message.welcome_message
-    until finished?
+    while true
       outstream.print message.command_prompt
-      @command = instream.gets.strip
+      @command = input
       command_prosesser
     end
+  rescue Quit
+    outstream.puts message.good_bye
   end
 
   def command_prosesser
     case
     when play?
       outstream.puts message.difficulty
-      difficulty = instream.gets.chomp.downcase
-      difficulty = DIFFICULTY_MAP[difficulty]
-      game = Game.new(instream, outstream, difficulty)
-      game.play
+      difficulty = input
+      @difficulty = DIFFICULTY_MAP[difficulty]
+      case
+      when difficulty?
+        game = Game.new(instream, outstream, @difficulty)
+        game.play
+      else
+        outstream.puts message.invalid_difficulty
+      end
     when instructions?
-      outstream.puts message.instructions
+      outstream.puts message.pre_instructions
       @command = ''
-    when finished?
-      outstream.puts message.good_bye
+    else
+      outstream.puts message.not_valid_input
     end
   end
 
   def play?
-    @command == 'p'
+    @command == 'p' || "play"
   end
 
   def instructions?
-    @command == 'i'
+    @command == 'i' || "instructions"
   end
 
-  def finished?
-    @command == 'q' || @command == 'quit'
+  def valid_difficulty?
+    /[^emh]/ === @command
+  end
+
+  def quit?
+    @quit
+  end
+
+  def input
+    input = instream.gets.chomp.downcase
+    if input == 'q' || input == 'quit'
+      raise Quit
+    end
+    input
+  end
+
+  def difficulty?
+    DIFFICULTY_MAP.values.include?(@difficulty)
   end
 end

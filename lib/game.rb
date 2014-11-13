@@ -1,4 +1,4 @@
-require 'sequence_generator'                           # ~> LoadError: cannot load such file -- sequence_generator
+require 'sequence_generator'
 class Game
   attr_reader :instream, :outstream, :message, :guess, :difficulty
   def initialize(instream, outstream, difficulty)
@@ -8,17 +8,16 @@ class Game
     @winning_sequence = SequenceGenerator.generate(difficulty)
     @time_start       = Time.new
     @guesses          = 0
-    @message          = Messages.new
+    @message          = Messages.new(difficulty)
     @guess            = ''
   end
 
   def play
-      outstream.puts message.new_game_message(difficulty)
+      @start_time = Time.now
+      outstream.puts message.new_game_message
     until win? || exit?
       outstream.print message.command_prompt
       guessing
-outstream.puts @guess
-outstream.puts @winning_sequence
       prosses_guess
     end
   end
@@ -26,18 +25,22 @@ outstream.puts @winning_sequence
   def prosses_guess
     case
     when exit?
-      outstream.puts message.good_bye
+      raise Cli::Quit
     when win?
+      duration = Time.diff(@start_time, Time.now)
       outstream.puts message.win_game
+      outstream.puts message.duration(duration[:minute], duration[:second])
       outstream.puts message.main_menu
+    when help?
+      outstream.puts "#{@winning_sequence}"
+    when instructions?
+      outstream.puts message.in_instructions
     when to_long?
       outstream.puts message.to_long
     when to_short?
       outstream.puts message.to_short
     when invalid_chars?
       outstream.puts message.invalid_chars
-    when instructions?
-      outstream.puts message.instructions
     when nearly?
       outstream.puts message.nearly(correct_colors, correct_positions)
       add_turn
@@ -58,6 +61,10 @@ outstream.puts @winning_sequence
 
   def win?
     guess == @winning_sequence.join
+  end
+
+  def help?
+    guess == "h"
   end
 
   def to_long?
@@ -96,10 +103,3 @@ outstream.puts @winning_sequence
     @guesses += 1
   end
 end
-
-# ~> LoadError
-# ~> cannot load such file -- sequence_generator
-# ~>
-# ~> /Users/Kit/.rbenv/versions/2.1.4/lib/ruby/2.1.0/rubygems/core_ext/kernel_require.rb:55:in `require'
-# ~> /Users/Kit/.rbenv/versions/2.1.4/lib/ruby/2.1.0/rubygems/core_ext/kernel_require.rb:55:in `require'
-# ~> /Users/Kit/turing/projects/mastermind/lib/game.rb:1:in `<main>'
