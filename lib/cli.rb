@@ -1,6 +1,7 @@
 require 'messages'
 require 'game'
 class Cli
+  DIFFICULTY_MAP = {"e" => 4, "m" => 5, "h" => 6}
 
   attr_reader :instream, :outstream, :message
 
@@ -16,19 +17,21 @@ class Cli
     until finished?
       outstream.print message.command_prompt
       @command = instream.gets.strip
-      command_prosess
+      command_prosesser
     end
   end
 
-  def command_prosess
+  def command_prosesser
     case
     when play?
-      game = Game.new(instream, outstream)
+      outstream.puts message.difficulty
+      difficulty = instream.gets.chomp.downcase
+      difficulty = DIFFICULTY_MAP[difficulty]
+      game = Game.new(instream, outstream, difficulty)
       game.play
     when instructions?
       outstream.puts message.instructions
       @command = ''
-      command_prosess
     when finished?
       outstream.puts message.good_bye
     end

@@ -1,5 +1,5 @@
 class Messages
-
+  COLORS = ["(r)ed", "(g)reen", "(b)lue", "(y)ellow", "(p)urple", "(o)range"]
   def welcome_message
     "Welcome to MASTERMIND! Would you like to (p)lay, read the (i)nstructions, or (q)uit?"
   end
@@ -8,18 +8,28 @@ class Messages
     "> "
   end
 
-  def new_game_message
-    "I have generated a beginner sequence with four elements made up of:\n(r)ed,\
-    (g)reen, (b)lue, and (y)ellow.\nUse (q)uit at any time to end the game.\
-    \nWhat's your guess?"
+  def difficulty_message(difficulty)
+    COLORS.take(difficulty).join(", ")
+  end
+
+  def new_game_message(difficulty)
+    "I have generated a beginner sequence with four colors made up of:\n"\
+    "#{difficulty_message(difficulty)}.\nUse (q)uit at any time to end the game.\n"\
+    "What's your guess?"
   end
 
   def win_game
     "Congratulations! You guessed correctly."
   end
 
+  def difficulty
+    "What difficulty would you like?\n"
+    "(e)asy, (m)edium, or (h)ard"
+  end
+
   def to_long
-    "You guess is to long.\nTry again."
+    "You guess is to long.\n"\
+    "Try again."
   end
 
   def to_short
@@ -27,16 +37,23 @@ class Messages
   end
 
   def invalid_chars
-    "Your guess has one or more letters which are not part of the game.\nTry again."
+    "The only colors are (r)ed, (g)reen, (b)lue or (y)ellow.\n"\
+    "Try again."
   end
 
   def instructions
-    "To play choose any combination of (r)ed, (g)reen, (b)lue or (y)ellow.\n \
-    What would you like to do?"
+    "Instructions: To play choose any combination of (r)ed, (g)reen, (b)lue or (y)ellow.\n"\
+    "What would you like to do?"
   end
 
-  def close(correct_colors, correct_positions)
-    "Close! You have #{correct_colors} in #{correct_positions} correct positions."
+  def main_menu
+    "Main menu: Would you like to play again?\n"
+    "(p)lay, (i)nstructions, or (q)uit"
+  end
+
+  def nearly(correct_colors, correct_positions)
+    "Almost! You have #{correct_colors} #{correct_colors < 2 ? "color" : "colors"} correct and #{correct_positions}" \
+    " #{correct_positions < 2 ? "is" : "are"} in the correct positions."
   end
 
   def good_bye

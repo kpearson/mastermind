@@ -1,9 +1,9 @@
-
-require_relative '../lib/mastermind.rb'
+require_relative 'test_helper.rb'
 
 class TestMastermind < Minitest::Test
   def setup
-    @player = Player.new
+    @cli = Cli.new($stdin, $stdout)
+    @cli = Game.new($stdin, $stdout)
   end
 
   def test_user_sees_welcome_message
